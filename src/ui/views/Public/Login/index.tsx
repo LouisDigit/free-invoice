@@ -30,9 +30,9 @@ const Login: React.FC = () => {
   return (
     <form>
       <h1>Login Page</h1>
-
       <Input
         type="email"
+        onLabelClick={handleLabelFocus}
         onChange={handleInput}
         label="Email"
         placeholder="Entrez votre email"
@@ -42,6 +42,7 @@ const Login: React.FC = () => {
       <Input
         type="password"
         placeholder="Entrez votre password"
+        onLabelClick={handleLabelFocus}
         label="Password"
         onChange={handleInput}
         name="password"

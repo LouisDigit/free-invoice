@@ -5,6 +5,7 @@ interface InputProps {
   type: "text" | "email" | "password" | "number" | undefined;
   id?: string;
   placeholder?: string;
+  onLabelClick?: () => void;
   label?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -16,10 +17,17 @@ const Input = ({
   type,
   label,
   placeholder,
+  onLabelClick,
 }: InputProps) => {
   return (
     <div className="flex gap-3 items-center">
-      {label ? <label htmlFor={name}>{label}</label> : ""}
+      {label ? (
+        <label onClick={onLabelClick} htmlFor={name}>
+          {label}
+        </label>
+      ) : (
+        ""
+      )}
       <input
         type={type}
         name={name}
