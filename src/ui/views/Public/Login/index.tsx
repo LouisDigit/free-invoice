@@ -30,26 +30,22 @@ const Login: React.FC = () => {
   return (
     <form>
       <h1>Login Page</h1>
-      <div className="flex gap-3">
-        <label
-          htmlFor="email"
-          onClick={handleLabelFocus}
-          className="cursor-pointer"
-        >
-          Email
-        </label>
-        <Input type="email" onChange={handleInput} name="email" />
-      </div>
-      <div className="flex gap-3">
-        <label
-          htmlFor="password"
-          onClick={handleLabelFocus}
-          className="cursor-pointer"
-        >
-          Password
-        </label>
-        <Input type="password" onChange={handleInput} name="password" />
-      </div>
+
+      <Input
+        type="email"
+        onChange={handleInput}
+        label="Email"
+        placeholder="Entrez votre email"
+        name="email"
+      />
+
+      <Input
+        type="password"
+        placeholder="Entrez votre password"
+        label="Password"
+        onChange={handleInput}
+        name="password"
+      />
     </form>
   );
 };
