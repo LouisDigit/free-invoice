@@ -1,8 +1,8 @@
-import React, from "react";
+import React from "react";
 
 interface InputProps {
   name: string;
-  type: "text" | "email" | "password" | "number" | undefined
+  type: "text" | "email" | "password" | "number" | undefined;
   id?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
