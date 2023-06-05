@@ -8,18 +8,16 @@ describe("Redirection from the Home page", () => {
   });
 
   it("Should redirect to Login Page", async () => {
-    const loginLink = screen.getByRole("link", { name: /login/i });
+    const loginLink = screen.getByRole("button", { name: /login/i });
     await userEvent.click(loginLink);
 
-    expect(screen.getByText(/you are on the login page/i)).toBeInTheDocument();
+    expect(screen.getByText(/login page/i)).toBeInTheDocument();
   });
 
   it("Should redirect to Register Page", async () => {
-    const registerLink = screen.getByRole("link", { name: /register/i });
+    const registerLink = screen.getByRole("button", { name: /register/i });
     await userEvent.click(registerLink);
 
-    expect(
-      screen.getByText(/you are on the register page/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/register page/i)).toBeInTheDocument();
   });
 });
