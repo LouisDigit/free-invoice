@@ -1,27 +1,26 @@
-import { createBrowserRouter, createMemoryRouter } from "react-router-dom";
 import Home from "../ui/views/Public/Home";
 import Login from "../ui/views/Public/Login";
 import Register from "../ui/views/Public/Register";
-import Dashboard from "../ui/views/Private/Dashboard";
-import { createMemoryHistory } from "history";
+import { MemoryRouter } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import PublicLayout from "../ui/views/Public/Layout";
+import { createBrowserRouter } from "react-router-dom";
+import { publicRouter } from "./PublicRouter";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />,
-    children: [
-      {
-        path: "login",
-        element: <Login />,
-      },
-      {
-        path: "register",
-        element: <Register />,
-      },
-    ],
-  },
-  {
-    path: "/user",
-    element: <Dashboard />,
+    element: <PublicLayout />,
+    children: publicRouter,
   },
 ]);
+
+export const testingMemoryRouter = (
+  <MemoryRouter initialEntries={["/"]}>
+    <Routes>
+      <Route path="/" index element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+    </Routes>
+  </MemoryRouter>
+);
