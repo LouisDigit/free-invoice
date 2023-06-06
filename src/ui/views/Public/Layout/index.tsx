@@ -1,15 +1,15 @@
 import { Outlet } from "react-router-dom";
-import lp from "./../../../../assets/Home/landing-page.jpeg";
+import Header from "../../../components/Header";
+import Footer from "../../../components/Footer";
 
 const PublicLayout = () => {
   return (
-    <div
-      id="home"
-      className="w-screen flex flex-col p-10  h-screen bg-cover"
-      style={{ backgroundImage: `url(${lp})` }}
-    >
-      <Outlet />
-    </div>
+    <>
+      <Header />
+      <main>
+        <Outlet />
+      </main>
+    </>
   );
 };
 

@@ -1,3 +1,39 @@
+/*Syntax*/
+html {
+  font-family: sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 8px;
+  background-color: white;
+  color: black;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+a {
+  color: #1a0dab;
+  background-color: transparent;
+  text-decoration: none;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,4 +47,16 @@ body {
 a {
   text-decoration: none;
   color: #000;
+}
+
+input {
+  -webkit-appearance: none;
+  box-shadow: none !important;
+}
+:-webkit-autofill {
+  color: #fff !important;
+}
+
+input:-webkit-autofill {
+  background: #fff !important;
 }

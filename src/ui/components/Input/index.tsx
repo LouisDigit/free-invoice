@@ -5,7 +5,9 @@ interface InputProps {
   type: "text" | "email" | "password" | "number" | undefined;
   id?: string;
   placeholder?: string;
-  onLabelClick?: () => void;
+  onLabelClick?: (
+    event: React.MouseEvent<HTMLLabelElement, MouseEvent>
+  ) => void;
   label?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -20,9 +22,9 @@ const Input = ({
   onLabelClick,
 }: InputProps) => {
   return (
-    <div className="flex gap-3 items-center">
+    <div className="flex flex-col gap-2">
       {label ? (
-        <label onClick={onLabelClick} htmlFor={name}>
+        <label onClick={onLabelClick} className="cursor-pointer" htmlFor={name}>
           {label}
         </label>
       ) : (
@@ -34,7 +36,7 @@ const Input = ({
         onChange={onChange}
         id={id}
         placeholder={placeholder}
-        className="px-3 py-2 rounded-full"
+        className="px-3 py-2  bg-white border-b-2 border-gray-300 focus:outline-none"
       />
     </div>
   );

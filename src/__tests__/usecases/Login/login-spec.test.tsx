@@ -1,12 +1,13 @@
-import { render, screen } from "@testing-library/react";
-import Login from "../../../ui/views/Public/Login";
+import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-describe("User see the login form", () => {
+import { testingRouter } from "../../../router";
+
+describe("Rule: Interaction with the Login form", () => {
   beforeEach(() => {
-    render(<Login />);
+    render(testingRouter("/login"));
   });
-  describe("Rule: Interaction with the form", () => {
-    test("User click on the email label", async () => {
+  describe("User click on the email label", () => {
+    it("Should get the focus on email input", async () => {
       const emailLabel = screen.getByText(/email/i);
       const emailInput = screen.getByRole("textbox");
 
@@ -14,5 +15,41 @@ describe("User see the login form", () => {
 
       expect(emailInput).toHaveFocus();
     });
+  });
+
+  describe("User fill the fields of the form", () => {
+    it("Should enabled the submit button", async () => {
+      const submitButton = screen.getByRole("button", {
+        name: /login/i,
+      }) as HTMLButtonElement;
+
+      const emailInput = screen.getByLabelText("Email") as HTMLInputElement;
+      const passwordInput = screen.getByLabelText(
+        "Password"
+      ) as HTMLInputElement;
+
+      await fireEvent.change(emailInput, {
+        target: { value: "louisv.digit@gmail.com" },
+      });
+      await fireEvent.change(passwordInput, { target: { value: "password" } });
+
+      expect(submitButton.disabled).toBe(false);
+    });
+  });
+
+  it("Should disabled the submit button", async () => {
+    const submitButton = screen.getByRole("button", {
+      name: /login/i,
+    }) as HTMLButtonElement;
+
+    const emailInput = screen.getByLabelText("Email") as HTMLInputElement;
+    const passwordInput = screen.getByLabelText("Password") as HTMLInputElement;
+
+    await fireEvent.change(emailInput, {
+      target: { value: "" },
+    });
+    await fireEvent.change(passwordInput, { target: { value: "" } });
+
+    expect(submitButton.disabled).toBe(true);
   });
 });

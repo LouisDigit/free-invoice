@@ -15,12 +15,16 @@ export const router = createBrowserRouter([
   },
 ]);
 
-export const testingMemoryRouter = (
-  <MemoryRouter initialEntries={["/"]}>
-    <Routes>
-      <Route path="/" index element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-    </Routes>
-  </MemoryRouter>
-);
+export const testingRouter = (initialEntry: string) => {
+  return (
+    <MemoryRouter initialEntries={[initialEntry]}>
+      <Routes>
+        <Route element={<PublicLayout />}>
+          <Route path="/" index element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
+      </Routes>
+    </MemoryRouter>
+  );
+};
