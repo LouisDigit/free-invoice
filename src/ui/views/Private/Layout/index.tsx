@@ -1,14 +1,14 @@
 import { Outlet } from "react-router-dom";
 import Header from "../../../components/Header";
-import Footer from "../../../components/Footer";
-import { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import { useAppSelector } from "../../../../store/hooks";
 import lp from "./../../../../assets/Home/landing-page.jpeg";
+import { useEffect } from "react";
 
-const PublicLayout = () => {
+const PrivateLayout = () => {
   const loading = useAppSelector((state) => state.loading);
 
   useEffect(() => {}, [loading]);
+
   return (
     <main
       className="bg-cover min-h-screen"
@@ -33,4 +33,4 @@ const PublicLayout = () => {
   );
 };
 
-export default PublicLayout;
+export default PrivateLayout;

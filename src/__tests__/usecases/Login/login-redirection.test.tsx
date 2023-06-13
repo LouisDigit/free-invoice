@@ -15,7 +15,7 @@ describe("Redirection from Login page", () => {
         await fireEvent.click(registerLink);
       });
 
-      expect(screen.getByText(/register page/i)).toBeInTheDocument();
+      expect(screen.getByText(/register form/i)).toBeInTheDocument();
     });
   });
 });

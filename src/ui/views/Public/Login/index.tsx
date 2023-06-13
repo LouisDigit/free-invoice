@@ -1,28 +1,52 @@
 import React, { useEffect, useState } from "react";
 import Input from "../../../components/Input";
 import SecondaryButton from "../../../components/Button/SecondaryButton";
-import { LoginCredentials } from "../../../../domain/entities/auth.types";
+import { LoginCredentials } from "../../../../domain/entities/auth-types";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebook } from "@fortawesome/free-brands-svg-icons";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import lp from "./../../../../assets/Home/landing-page.jpeg";
-import Footer from "../../../components/Footer";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../../../..";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useAppDispatch } from "../../../../store/hooks";
+import { login } from "../../../../domain/usecases/auth-slice";
+import { getLoginError } from "../../../../domain/usecases/error-slice";
+import { useAppSelector } from "../../../../store/hooks";
+import { setLoading } from "../../../../domain/usecases/loading-slice";
+import { resetError } from "../../../../domain/usecases/error-slice";
+import {
+  resetSuccess,
+  setSuccess,
+} from "../../../../domain/usecases/success-slice";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+
 const Login: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const success = useAppSelector((state) => state.success);
+  const error = useAppSelector((state) => state.error);
+  const provider = new GoogleAuthProvider();
+
   const [userLogin, setUserLogin] = useState<LoginCredentials>({
     email: "",
     password: "",
   });
-
   const [enabledButton, setEnabledButton] = useState<boolean>(false);
 
   useEffect(() => {
+    auth.onAuthStateChanged((authUser) => {
+      if (authUser) {
+        dispatch(setSuccess("You are already connected"));
+      }
+    });
     if (userLogin.email !== "" && userLogin.password !== "") {
       setEnabledButton(false);
     } else {
       setEnabledButton(true);
     }
-  }, [userLogin]);
+  }, [userLogin, error]);
 
   const handleLabelFocus = (
     event: React.MouseEvent<HTMLLabelElement, MouseEvent>
@@ -45,9 +69,48 @@ const Login: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(userLogin);
+    dispatch(setLoading(true));
+    try {
+      await signInWithEmailAndPassword(
+        auth,
+        userLogin.email,
+        userLogin.password
+      ).then((userAuth) => {
+        navigate("/user");
+      });
+      dispatch(setLoading(false));
+      setUserLogin({ email: "", password: "" });
+    } catch (error: any) {
+      const errorCode = error.code;
+      dispatch(getLoginError(errorCode));
+      dispatch(setLoading(false));
+    }
+  };
+
+  const handleSignInWithGoogle = async () => {
+    await signInWithPopup(auth, provider)
+      .then((result) => {
+        const user = result.user;
+        dispatch(
+          login({
+            username: user.displayName,
+            email: user.email,
+            id: user.uid,
+          })
+        );
+        navigate("/user");
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
+  };
+
+  const handleNavigate = () => {
+    dispatch(resetError());
+    dispatch(resetSuccess());
   };
 
   return (
@@ -64,6 +127,20 @@ const Login: React.FC = () => {
             onSubmit={handleSubmit}
             className="flex flex-col gap-5 px-5 py-3 w-[26rem]"
           >
+            {error.message !== "" ? (
+              <span className="w-full text-center text-white bg-red-900 rounded-xl px-5 py-3">
+                {error.message}
+              </span>
+            ) : (
+              <></>
+            )}
+            {success.enabled ? (
+              <span className="w-full text-center text-white bg-green-700 rounded-xl px-5 py-3">
+                {success.message}
+              </span>
+            ) : (
+              <></>
+            )}
             <Input
               type="email"
               id="email"
@@ -72,6 +149,7 @@ const Login: React.FC = () => {
               label="Email"
               placeholder="Entrez votre email"
               name="email"
+              required={true}
             />
             <div className="flex flex-col">
               <Input
@@ -82,6 +160,7 @@ const Login: React.FC = () => {
                 label="Password"
                 onChange={handleInput}
                 name="password"
+                required={true}
               />
               <Link
                 to="/"
@@ -102,6 +181,7 @@ const Login: React.FC = () => {
                 <Link
                   to="/register"
                   className="text-blue-500 border-b border-b-blue-500 hover:text-blue-600 hover:border-b-blue-600 "
+                  onClick={handleNavigate}
                 >
                   Sign up
                 </Link>
@@ -115,8 +195,14 @@ const Login: React.FC = () => {
                 <FontAwesomeIcon icon={faFacebook} className="text-2xl" />{" "}
                 Facebook
               </li>
-              <li className="flex-1 flex justify-center items-center gap-2 bg-red-600 px-5 hover:bg-red-700 py-3 rounded-lg text-white cursor-pointer shadow-2xl">
-                <FontAwesomeIcon icon={faGoogle} className="text-2xl" /> Google
+              <li className="flex-1   bg-red-600 px-5 hover:bg-red-700 py-3 rounded-lg text-white cursor-pointer shadow-2xl">
+                <button
+                  className="flex justify-center items-center w-full h-full gap-2"
+                  onClick={handleSignInWithGoogle}
+                >
+                  <FontAwesomeIcon icon={faGoogle} className="text-2xl" />{" "}
+                  Google
+                </button>
               </li>
             </ul>
           </form>

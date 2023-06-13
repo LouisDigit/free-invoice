@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { testingRouter } from "../../../router";
+import { $CombinedState } from "redux";
 
 describe("Rule: Interaction with the Login form", () => {
   beforeEach(() => {
@@ -34,6 +35,24 @@ describe("Rule: Interaction with the Login form", () => {
       await fireEvent.change(passwordInput, { target: { value: "password" } });
 
       expect(submitButton.disabled).toBe(false);
+    });
+
+    it("Should throw an error of identifier", async () => {
+      const emailInput = screen.getByLabelText("Email") as HTMLInputElement;
+      const passwordInput = screen.getByLabelText(
+        "Password"
+      ) as HTMLInputElement;
+
+      await fireEvent.change(emailInput, {
+        target: { value: "something@dont.exist" },
+      });
+
+      await fireEvent.change(passwordInput, {
+        target: { value: "thatdontexist" },
+      });
+      expect(
+        screen.getByLabelText("User not found with this identifier")
+      ).toBeInTheDocument();
     });
   });
 

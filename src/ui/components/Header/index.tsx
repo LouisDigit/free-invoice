@@ -4,10 +4,20 @@ import SecondaryButton from "../Button/SecondaryButton";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { signOut } from "firebase/auth";
+import { logout } from "../../../domain/usecases/auth-slice";
+import { useAppSelector } from "../../../store/hooks";
+import { useAppDispatch } from "../../../store/hooks";
+import { resetError } from "../../../domain/usecases/error-slice";
+import { resetSuccess } from "../../../domain/usecases/success-slice";
+import { auth } from "../../..";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const location = useLocation();
-
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.auth.user);
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -21,7 +31,22 @@ const Header = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [user]);
+
+  const handleSignOut = () => {
+    dispatch(logout());
+    signOut(auth);
+    navigate("/");
+  };
+
+  const handleNavigate = () => {
+    dispatch(resetError());
+    dispatch(resetSuccess());
+  };
+
+  const handleDashboard = () => {
+    navigate("/user");
+  };
 
   const headerStyle = {
     backgroundColor: isScrolled
@@ -40,21 +65,53 @@ const Header = () => {
       </Link>
 
       <ul className="flex gap-3 z-10">
-        {location.pathname !== "/login" ? (
+        {location.pathname !== "/login" && !user ? (
           <li>
             <Link to="/login">
-              <PrimaryButton text="Login" type="button" />
+              <PrimaryButton
+                text="Login"
+                type="button"
+                onClick={handleNavigate}
+              />
             </Link>
           </li>
         ) : (
           ""
         )}
-        {location.pathname !== "/register" ? (
+        {location.pathname !== "/register" && !user ? (
           <li>
             <Link to="/register">
-              <SecondaryButton text="Register" type="button" />
+              <SecondaryButton
+                text="Register"
+                type="button"
+                onClick={handleNavigate}
+              />
             </Link>
           </li>
+        ) : (
+          ""
+        )}
+        {user !== null ? (
+          <>
+            <li>
+              <PrimaryButton
+                text="Sign Out"
+                onClick={handleSignOut}
+                type="button"
+              />
+            </li>
+            {location.pathname !== "/user" ? (
+              <li>
+                <SecondaryButton
+                  text="Dashboard"
+                  onClick={handleDashboard}
+                  type="button"
+                />
+              </li>
+            ) : (
+              <></>
+            )}
+          </>
         ) : (
           ""
         )}

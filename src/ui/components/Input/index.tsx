@@ -10,6 +10,8 @@ interface InputProps {
   ) => void;
   label?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: boolean;
+  required?: boolean;
 }
 
 const Input = ({
@@ -20,6 +22,8 @@ const Input = ({
   label,
   placeholder,
   onLabelClick,
+  error,
+  required,
 }: InputProps) => {
   return (
     <div className="flex flex-col gap-2">
@@ -35,8 +39,11 @@ const Input = ({
         name={name}
         onChange={onChange}
         id={id}
+        required={required}
         placeholder={placeholder}
-        className="px-3 py-2  bg-white border-b-2 border-gray-300 focus:outline-none"
+        className={`px-3 py-2  bg-white border-b-2  focus:outline-none ${
+          error ? "border-red-700" : "border-gray-300"
+        }`}
       />
     </div>
   );

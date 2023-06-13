@@ -10,7 +10,7 @@ describe("Feature: User navigate to the Home page", () => {
           <Home />
         </MemoryRouter>
       );
-      const titleElement = screen.getByText(/Home/i);
+      const titleElement = screen.getByText(/la note/i);
       expect(titleElement).toBeInTheDocument();
     });
   });
