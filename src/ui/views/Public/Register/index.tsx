@@ -2,27 +2,31 @@ import React, { useEffect, useState } from "react";
 import Input from "../../../components/Input";
 import SecondaryButton from "../../../components/Button/SecondaryButton";
 import { RegisterCredentials } from "../../../../domain/entities/auth-types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { updateProfile } from "firebase/auth";
-import { auth } from "../../../..";
-import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import { useAppDispatch } from "../../../../store/hooks";
+import { authError, authLoading } from "../../../../domain/usecases/auth-slice";
+import { faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
+
 import {
-  getRegisterError,
-  resetError,
-} from "../../../../domain/usecases/error-slice";
-import { setSuccess } from "../../../../domain/usecases/success-slice";
-import { setLoading } from "../../../../domain/usecases/loading-slice";
+  isUserAuthenticatedSelector,
+  signUp,
+} from "../../../../domain/usecases/auth-slice";
+import { useAppSelector } from "../../../../store/hooks";
+import logo from "./../../../../assets/Global/La_Note.png";
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const error = useAppSelector((state) => state.error);
+  const authenticated = useAppSelector(isUserAuthenticatedSelector);
+  const loading = useAppSelector(authLoading);
+  const error = useAppSelector(authError);
 
   const [credentialRegister, setCredentialRegister] =
     useState<RegisterCredentials>({
-      firstname: "",
-      lastname: "",
+      username: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -34,15 +38,14 @@ const Register: React.FC = () => {
     if (
       credentialRegister.email !== "" &&
       credentialRegister.password !== "" &&
-      credentialRegister.firstname !== "" &&
-      credentialRegister.lastname !== "" &&
+      credentialRegister.username !== "" &&
       credentialRegister.confirmPassword !== ""
     ) {
       setEnabledButton(false);
     } else {
       setEnabledButton(true);
     }
-  }, [credentialRegister, error]);
+  }, [credentialRegister, authenticated, loading, error]);
 
   const handleLabelFocus = (
     event: React.MouseEvent<HTMLLabelElement, MouseEvent>
@@ -66,130 +69,104 @@ const Register: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    dispatch(setLoading(true));
+    dispatch(signUp(credentialRegister));
+  };
 
-    const { firstname, lastname, email, password, confirmPassword } =
-      credentialRegister;
+  if (authenticated) {
+    navigate("/user");
+  }
 
-    if (password !== confirmPassword) {
-      dispatch(getRegisterError("auth/match-password"));
-    } else {
-      try {
-        const { user } = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-        updateProfile(user, {
-          displayName: firstname + " " + lastname,
-        });
-        dispatch(setLoading(false));
-
-        if (user && user.email) {
-          dispatch(resetError());
-          dispatch(setSuccess("User has been registered"));
-          navigate("/user");
-        }
-      } catch (error: any) {
-        const errorCode = error.code;
-        await dispatch(getRegisterError(errorCode));
-        dispatch(setLoading(false));
-      }
-    }
+  const handleSignInWithGoogle = async () => {
+    console.log("connect with google");
   };
 
   return (
     <>
       <section className="w-full h-screen flex justify-center items-center">
-        <div className="flex flex-col bg-white shadow-2xl rounded-lg">
-          <h1 className="text-center py-5 text-xl uppercase bg-gray-800 text-white rounded-t-lg">
-            Register Form
-          </h1>
+        {loading ? (
+          <div className="loader-content">
+            <div className="spinner"></div>
+          </div>
+        ) : (
+          <div className="flex flex-col rounded-lg items-center sm:px-5 md:px-0 w-full">
+            <Link to="/">
+              <img src={logo} alt="logo_la_note" className="w-32" />
+            </Link>
 
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col gap-5 px-5 py-3 w-[26rem]"
-          >
-            {error.message !== "" ? (
-              <span className="w-full text-center text-white bg-red-900 rounded-xl px-5 py-3">
-                {error.message}
-              </span>
-            ) : (
-              <></>
-            )}
+            <h1 className="text-3xl font-semibold">Create an account</h1>
+            <h6 className="text-md font-light my-5">
+              Start your 30-day free trial.
+            </h6>
 
-            <Input
-              type="text"
-              id="firstname"
-              onLabelClick={handleLabelFocus}
-              onChange={handleInput}
-              label="Firstname"
-              placeholder="Entrez votre prénom"
-              name="firstname"
-              required={true}
-            />
-            <Input
-              type="text"
-              id="lastname"
-              onLabelClick={handleLabelFocus}
-              onChange={handleInput}
-              label="Lastname"
-              placeholder="Entrez votre nom"
-              name="lastname"
-              required={true}
-            />
-            <Input
-              type="email"
-              id="email"
-              onLabelClick={handleLabelFocus}
-              onChange={handleInput}
-              label="Email"
-              placeholder="Entrez votre email"
-              name="email"
-              error={error.code === "auth/email-already-in-use" ? true : false}
-              required={true}
-            />
-            <Input
-              type="password"
-              id="password"
-              placeholder="Entrez votre password"
-              onLabelClick={handleLabelFocus}
-              label="Password"
-              onChange={handleInput}
-              name="password"
-              error={
-                error.code === "auth/weak-password" ||
-                error.code === "auth/match-password"
-                  ? true
-                  : false
-              }
-              required={true}
-            />
-            <Input
-              type="password"
-              id="confirmPassword"
-              placeholder="Confirmez votre password"
-              onLabelClick={handleLabelFocus}
-              label="Confirm password"
-              onChange={handleInput}
-              name="confirmPassword"
-              error={
-                error.code === "auth/weak-password" ||
-                error.code === "auth/match-password"
-                  ? true
-                  : false
-              }
-              required={true}
-            />
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col gap-5 px-5 py-3 sm:w-full lg:w-[26rem] w-full"
+            >
+              {error ? (
+                <span className="text-white bg-red-500 text-center py-2 rounded-lg">
+                  {error.toString()}
+                </span>
+              ) : (
+                <></>
+              )}
 
-            <SecondaryButton
-              text="Register"
-              type="submit"
-              disabled={enabledButton}
-            />
-          </form>
-        </div>
+              <Input
+                type="text"
+                id="username"
+                onLabelClick={handleLabelFocus}
+                onChange={handleInput}
+                label="Username*"
+                placeholder="Enter your username"
+                name="username"
+                required={true}
+              />
+              <Input
+                type="email"
+                id="email"
+                onLabelClick={handleLabelFocus}
+                onChange={handleInput}
+                label="Email*"
+                placeholder="Entrez votre email"
+                name="email"
+                required={true}
+              />
+              <Input
+                type="password"
+                id="password"
+                placeholder="Entrez votre password"
+                onLabelClick={handleLabelFocus}
+                label="Password*"
+                onChange={handleInput}
+                name="password"
+                required={true}
+              />
+              <Input
+                type="password"
+                id="confirmPassword"
+                placeholder="Confirmez votre password*"
+                onLabelClick={handleLabelFocus}
+                label="Confirm password"
+                onChange={handleInput}
+                name="confirmPassword"
+                required={true}
+              />
+
+              <SecondaryButton
+                text="Register"
+                type="submit"
+                disabled={enabledButton}
+                cssClass="rounded-lg"
+              />
+              <button
+                className="flex justify-center items-center w-full h-full gap-2 bg-red-600  hover:bg-red-700 px-5 py-2 text-white rounded-lg"
+                onClick={handleSignInWithGoogle}
+              >
+                <FontAwesomeIcon icon={faGoogle} className="text-2xl" /> Sign in
+                with Google
+              </button>
+            </form>
+          </div>
+        )}
       </section>
     </>
   );

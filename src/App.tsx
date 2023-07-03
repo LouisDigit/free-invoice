@@ -6,25 +6,27 @@ import "./index.css";
 import { auth } from ".";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
-import { login, logout } from "./domain/usecases/auth-slice";
-import { useNavigate } from "react-router-dom";
+import {
+  authSelector,
+  checkUserStatus,
+  setLogin,
+  signIn,
+} from "./domain/usecases/auth-slice";
+import { authLoading } from "./domain/usecases/auth-slice";
 
 function App() {
   const dispatch = useAppDispatch();
-  const currentUser = useAppSelector((state) => state.auth.user);
 
   useEffect(() => {
-    auth.onAuthStateChanged((authUser) => {
-      if (authUser) {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
         dispatch(
-          login({
-            username: authUser.displayName,
-            email: authUser.email,
-            id: authUser.uid,
+          setLogin({
+            username: user.displayName,
+            email: user.email,
+            id: user.uid,
           })
         );
-      } else {
-        dispatch(logout());
       }
     });
   }, []);

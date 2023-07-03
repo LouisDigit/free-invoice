@@ -1,3 +1,4 @@
+import { SerializedError } from "@reduxjs/toolkit";
 import { User } from "./user-types";
 
 export interface LoginCredentials {
@@ -6,13 +7,22 @@ export interface LoginCredentials {
 }
 
 export interface RegisterCredentials {
-  firstname: string;
-  lastname: string;
+  username: string;
   email: string;
   password: string;
   confirmPassword: string;
 }
 
+export const ERRORS_KEYS = [
+  "auth/network-request-failed",
+  "auth/user-not-found",
+  "auth/wrong-password",
+] as const;
+
 export interface AuthState {
   user: null | User;
+  loading: null | boolean;
+  errors: null | string | SerializedError;
+  accessToken: null | string;
+  authenticated: boolean;
 }

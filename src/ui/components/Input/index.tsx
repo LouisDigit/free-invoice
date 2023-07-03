@@ -26,9 +26,13 @@ const Input = ({
   required,
 }: InputProps) => {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-3">
       {label ? (
-        <label onClick={onLabelClick} className="cursor-pointer" htmlFor={name}>
+        <label
+          onClick={onLabelClick}
+          className="cursor-pointer font-light"
+          htmlFor={name}
+        >
           {label}
         </label>
       ) : (
@@ -41,7 +45,7 @@ const Input = ({
         id={id}
         required={required}
         placeholder={placeholder}
-        className={`px-3 py-2  bg-white border-b-2  focus:outline-none ${
+        className={`px-3 py-2  bg-white border rounded-lg  focus:outline-none ${
           error ? "border-red-700" : "border-gray-300"
         }`}
       />
