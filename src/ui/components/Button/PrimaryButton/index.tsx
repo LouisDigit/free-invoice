@@ -17,10 +17,10 @@ const PrimaryButton = ({
 }: PrimaryButtonProps) => {
   const buttonClasses = ` ${
     cssClass ? cssClass : ""
-  } px-4 py-2  border   ease-out duration-300 text-white ${
+  } px-4 py-2 border flex gap-3 ease-out duration-300 text-white border-0 ${
     disabled
       ? "bg-gray-500 border-gray-500 cursor-not-allowed"
-      : "hover:bg-red-800 border-red-700 bg-red-700"
+      : "hover:bg-violet-700 border-red-950 bg-violet-800 rounded-lg"
   }`;
   return (
     <button

@@ -10,23 +10,14 @@ const PublicLayout = () => {
 
   useEffect(() => {}, [loading]);
   return (
-    <main
-      className="bg-cover min-h-screen"
-      style={{
-        backgroundImage: `url(${lp})`,
-        backgroundAttachment: "fixed",
-      }}
-    >
+    <main className="min-h-screen bg-violet-100">
       {loading.status ? (
         <div className="loader-content">
           <div className="spinner"></div>
         </div>
       ) : (
         <>
-          <Header />
-          <div>
-            <Outlet />
-          </div>
+          <Outlet />
         </>
       )}
     </main>
